@@ -1,0 +1,965 @@
+/* ==========================================================================
+   CHÙA TIÊN (CHUA TIEN) - PHÒNG LỄ PHẬT TRỰC TUYẾN
+   Livestream & Devotional Ceremonial Hall Interface
+   UI/UX Pro Max Fidelity
+   ========================================================================== */
+
+:root {
+  /* Color Palette */
+  --bg-dark: #0a0403;
+  --bg-frame: #120705;
+  --gold-primary: #D4A640;
+  --gold-bright: #F59E0B;
+  --gold-light: #FDE68A;
+  --gold-glow: rgba(245, 158, 11, 0.45);
+  --crimson-red: #8B1C10;
+  --crimson-dark: #581008;
+  --red-banner: #A82417;
+  --wood-dark: #200B06;
+  --text-main: #FFFFFF;
+  --text-gold: #FDE047;
+  --text-muted: #D1BBA2;
+  --text-subtle: #9CA3AF;
+  --card-glass: rgba(18, 8, 5, 0.78);
+  --card-border: rgba(212, 166, 64, 0.28);
+  --card-border-gold: rgba(245, 158, 11, 0.6);
+
+  /* Fonts */
+  --font-serif: 'Playfair Display', Georgia, serif;
+  --font-sans: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+
+  /* Transitions */
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+html, body {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background-color: #050201;
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  font-size: 13px;
+  line-height: 1.4;
+  user-select: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* ==========================================================================
+   STREAM PHONE FRAME (RESPONSIVE CENTERED CONTAINER)
+   ========================================================================== */
+.stream-phone-container {
+  position: relative;
+  width: 100vw;
+  height: 100vh;
+  max-width: 480px; /* Standard vertical live stream ratio */
+  max-height: 100vh;
+  overflow: hidden;
+  background: var(--bg-frame);
+  box-shadow: 0 0 40px rgba(0, 0, 0, 0.95), 0 0 0 1px rgba(212, 166, 64, 0.15);
+}
+
+@media (min-width: 600px) {
+  .stream-phone-container {
+    height: 94vh;
+    border-radius: 28px;
+    border: 3px solid #2d140d;
+  }
+}
+
+/* Temple Backdrop Layer */
+.temple-backdrop-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  overflow: hidden;
+}
+
+.backdrop-img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 25%;
+  transform: scale(1.02);
+  transition: transform 6s ease-out;
+}
+
+.backdrop-gradient-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    180deg,
+    rgba(10, 4, 3, 0.55) 0%,
+    rgba(10, 4, 3, 0.15) 30%,
+    rgba(10, 4, 3, 0.35) 60%,
+    rgba(10, 4, 3, 0.88) 85%,
+    rgba(10, 4, 3, 0.98) 100%
+  );
+  pointer-events: none;
+}
+
+.three-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 2;
+  pointer-events: auto;
+}
+
+.effects-canvas {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 3;
+}
+
+/* ==========================================================================
+   VIETNAMESE RED COUPLET BANNERS (CÂU ĐỐI SƠN SON CHỮ VÀNG)
+   ========================================================================== */
+.couplet-banner {
+  position: absolute;
+  top: 41%;
+  width: 28px;
+  background: linear-gradient(180deg, #991b1b 0%, #7f1d1d 100%);
+  border: 1.5px solid #fbbf24;
+  border-radius: 4px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.6), 0 0 6px rgba(251, 191, 36, 0.3);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 6px 0;
+  gap: 2px;
+  font-family: var(--font-serif);
+  font-size: 11px;
+  font-weight: 700;
+  color: #fef08a;
+  text-shadow: 0 1px 2px #450a0a;
+  z-index: 3;
+}
+
+.couplet-banner.left-banner {
+  left: 10px;
+}
+
+.couplet-banner.right-banner {
+  right: 10px;
+}
+
+.couplet-header {
+  font-size: 10px;
+  margin-bottom: 2px;
+}
+
+/* Devotee kneeling before altar (Linh) */
+.altar-devotee-wrapper {
+  position: absolute;
+  top: 46%;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 3;
+}
+
+.devotee-halo-pulse {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(253, 230, 138, 0.8) 0%, rgba(245, 158, 11, 0) 70%);
+  animation: halo-pulse 2.2s infinite ease-in-out;
+}
+
+@keyframes halo-pulse {
+  0%, 100% { transform: scale(0.9); opacity: 0.6; }
+  50% { transform: scale(1.4); opacity: 1; }
+}
+
+.altar-tag {
+  background: rgba(18, 8, 5, 0.85);
+  border: 1px solid var(--gold-bright);
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 10px;
+  color: #fff;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: -6px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+}
+
+/* Sleeping ginger cat */
+.temple-cat-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 36%;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  z-index: 3;
+  background: rgba(0, 0, 0, 0.45);
+  padding: 1px 6px;
+  border-radius: 10px;
+}
+
+.cat-sleep-text {
+  font-size: 9px;
+  color: #fde68a;
+  font-style: italic;
+  animation: float-zzz 2.5s infinite ease-out;
+}
+
+@keyframes float-zzz {
+  0% { transform: translateY(0); opacity: 0.4; }
+  50% { transform: translateY(-4px); opacity: 1; }
+  100% { transform: translateY(-8px); opacity: 0; }
+}
+
+.cat-emoji {
+  font-size: 13px;
+}
+
+/* Floating seat tags dynamically tracked in 3D */
+.devotee-tag-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 4;
+}
+
+.seat-badge-tag {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  gap: 3px;
+  background: rgba(18, 8, 5, 0.88);
+  border: 1px solid rgba(212, 166, 64, 0.45);
+  padding: 2px 7px;
+  border-radius: 12px;
+  font-size: 9.5px;
+  color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.6);
+  white-space: nowrap;
+  transform: translate(-50%, -100%);
+  transition: transform 0.15s ease-out;
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.seat-badge-tag:hover {
+  background: rgba(45, 18, 12, 0.95);
+  border-color: var(--gold-bright);
+  transform: translate(-50%, -108%) scale(1.08);
+}
+
+.seat-badge-tag .badge-sub {
+  color: var(--gold-bright);
+  font-weight: 700;
+  font-size: 9px;
+}
+
+/* ==========================================================================
+   STREAM UI OVERLAYS & GLASS CARDS
+   ========================================================================== */
+.stream-ui-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 12px 10px 8px 10px;
+  pointer-events: none;
+}
+
+.stream-ui-layer * {
+  pointer-events: auto;
+}
+
+.glass-card {
+  background: var(--card-glass);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid var(--card-border);
+  border-radius: 8px;
+  padding: 6px 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+}
+
+/* TOP STATUS BAR */
+.top-nav-bar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.top-left-rank-pill {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(18, 8, 5, 0.85);
+  border: 1px solid rgba(212, 166, 64, 0.3);
+  padding: 4px 10px;
+  border-radius: 14px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  cursor: pointer;
+  transition: background var(--ease-smooth);
+}
+
+.top-left-rank-pill:hover {
+  background: rgba(45, 18, 12, 0.95);
+  border-color: var(--gold-bright);
+}
+
+.top-left-rank-pill .chevron {
+  color: var(--gold-light);
+  font-weight: bold;
+}
+
+.top-right-room-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(18, 8, 5, 0.85);
+  border: 1px solid rgba(212, 166, 64, 0.3);
+  padding: 4px 8px;
+  border-radius: 14px;
+  font-size: 10.5px;
+  color: var(--text-muted);
+}
+
+.live-dot {
+  width: 6px;
+  height: 6px;
+  background-color: #22c55e;
+  border-radius: 50%;
+  box-shadow: 0 0 6px #22c55e;
+}
+
+.mini-sound-btn {
+  background: transparent;
+  border: none;
+  color: var(--gold-light);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  padding: 2px;
+}
+
+/* ==========================================================================
+   UPPER WIDGETS GRID (LEFT & RIGHT COLUMNS)
+   ========================================================================== */
+.upper-widgets-grid {
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  margin-top: 6px;
+  gap: 10px;
+}
+
+.widgets-col {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-width: 148px;
+}
+
+/* Widget 1: Hôm nay cùng thắp */
+.incense-goal-card {
+  width: 140px;
+}
+
+.card-header-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 2px;
+}
+
+.card-header-row .card-title {
+  font-size: 10.5px;
+  font-weight: 600;
+  color: var(--text-main);
+}
+
+.progress-number-row {
+  display: flex;
+  align-items: baseline;
+  gap: 4px;
+  margin-bottom: 3px;
+}
+
+.progress-number-row .current-val {
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--gold-bright);
+}
+
+.progress-number-row .max-val {
+  font-size: 10px;
+  color: var(--text-subtle);
+}
+
+.progress-bar-track {
+  width: 100%;
+  height: 4px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 2px;
+  overflow: hidden;
+  margin-bottom: 3px;
+}
+
+.progress-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #ea580c, #f59e0b);
+  border-radius: 2px;
+  transition: width 0.4s ease;
+}
+
+.progress-bar-fill.gold-fill {
+  background: linear-gradient(90deg, #f59e0b, #fbbf24);
+}
+
+.progress-sub-text {
+  font-size: 9px;
+  color: var(--text-subtle);
+}
+
+/* Widget 2: Tấm Lòng Thành */
+.leaderboard-card {
+  width: 140px;
+}
+
+.card-title-gold {
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--gold-bright);
+  letter-spacing: 0.5px;
+  margin-bottom: 4px;
+}
+
+.leaderboard-list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  margin-bottom: 4px;
+}
+
+.leader-item {
+  display: flex;
+  align-items: center;
+  font-size: 10px;
+}
+
+.rank-num {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 8.5px;
+  font-weight: bold;
+  margin-right: 4px;
+  color: #000;
+}
+
+.rank-1 { background: #f59e0b; }
+.rank-2 { background: #d1d5db; }
+.rank-3 { background: #d97706; }
+
+.leader-name {
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: #fff;
+}
+
+.leader-score {
+  font-weight: 700;
+  color: var(--gold-light);
+  margin-left: 4px;
+}
+
+.leaderboard-footer {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 8.5px;
+  color: var(--text-muted);
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 3px;
+}
+
+/* RIGHT COLUMN WIDGETS */
+.right-col {
+  align-items: flex-end;
+}
+
+/* Widget 3: Lễ Hồi Hướng Sau (Timer) */
+.timer-card {
+  width: 136px;
+}
+
+.timer-header {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 10px;
+  color: #fff;
+  font-weight: 600;
+}
+
+.timer-value-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 2px;
+}
+
+.timer-digits {
+  font-family: monospace;
+  font-size: 16px;
+  font-weight: 800;
+  color: var(--gold-bright);
+  letter-spacing: 0.5px;
+}
+
+.devotee-badge {
+  font-size: 8.5px;
+  background: rgba(245, 158, 11, 0.2);
+  color: var(--gold-light);
+  padding: 1px 4px;
+  border-radius: 4px;
+}
+
+/* Widget 4: Thả Tim Thỉnh Chuông */
+.bell-heart-card {
+  width: 136px;
+}
+
+.bell-progress-row {
+  display: flex;
+  align-items: baseline;
+  gap: 3px;
+  margin-bottom: 2px;
+}
+
+.bell-val {
+  font-size: 14px;
+  font-weight: 800;
+  color: #f43f5e;
+}
+
+.bell-target {
+  font-size: 9.5px;
+  color: var(--text-subtle);
+}
+
+/* Offering Buttons Stack */
+.offering-btn-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  width: 136px;
+}
+
+.offering-btn {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(18, 8, 5, 0.85);
+  border: 1px solid rgba(212, 166, 64, 0.25);
+  border-radius: 8px;
+  padding: 4px 6px;
+  color: #fff;
+  cursor: pointer;
+  text-align: left;
+  transition: all var(--ease-smooth);
+}
+
+.offering-btn:hover {
+  background: rgba(45, 18, 12, 0.95);
+  border-color: var(--gold-bright);
+  transform: translateX(-2px);
+}
+
+.offering-btn:active {
+  transform: scale(0.97);
+}
+
+.offering-icon {
+  font-size: 14px;
+}
+
+.offering-text .title {
+  font-size: 9.5px;
+  font-weight: 600;
+  color: #fff;
+  line-height: 1.2;
+}
+
+.offering-text .subtitle {
+  font-size: 8px;
+  color: var(--text-muted);
+  line-height: 1.2;
+}
+
+/* Disclaimer Note */
+.disclaimer-note {
+  width: 136px;
+  font-size: 7.5px;
+  color: #9ca3af;
+  line-height: 1.35;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 4px 6px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* ==========================================================================
+   STREAM SHARE TOAST BANNER
+   ========================================================================== */
+.stream-share-toast {
+  align-self: center;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  background: rgba(18, 8, 5, 0.88);
+  border: 1px solid rgba(212, 166, 64, 0.25);
+  padding: 5px 12px;
+  border-radius: 16px;
+  font-size: 10px;
+  color: #f3f4f6;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.5);
+  animation: toast-glow 3s infinite ease-in-out;
+  margin-top: 15px;
+}
+
+@keyframes toast-glow {
+  0%, 100% { border-color: rgba(212, 166, 64, 0.25); }
+  50% { border-color: var(--gold-bright); box-shadow: 0 0 10px var(--gold-glow); }
+}
+
+/* ==========================================================================
+   FLOATING CHECK-IN & SANGHA EVENT STREAM
+   ========================================================================== */
+.live-events-stream {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  max-width: 280px;
+  margin-top: auto;
+  margin-bottom: 8px;
+  overflow: hidden;
+  mask-image: linear-gradient(180deg, transparent 0%, black 25%);
+  -webkit-mask-image: linear-gradient(180deg, transparent 0%, black 25%);
+}
+
+.flying-event-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  background: rgba(18, 8, 5, 0.85);
+  border: 1px solid rgba(212, 166, 64, 0.25);
+  padding: 3px 8px;
+  border-radius: 14px;
+  font-size: 10.5px;
+  color: #fff;
+  width: fit-content;
+  animation: slide-up-fade 0.35s ease-out forwards;
+}
+
+@keyframes slide-up-fade {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.flying-event-pill.join-event {
+  background: rgba(30, 14, 10, 0.9);
+  border-color: rgba(245, 158, 11, 0.4);
+}
+
+.flying-event-pill .event-highlight {
+  color: var(--gold-bright);
+  font-weight: 700;
+}
+
+.flying-event-pill .streak-banner {
+  color: #fbbf24;
+  font-weight: 600;
+}
+
+/* ==========================================================================
+   STREAM BOTTOM INTERACTION BAR
+   ========================================================================== */
+.stream-bottom-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  width: 100%;
+}
+
+.chat-input-pill {
+  flex: 1;
+  display: flex;
+  background: rgba(18, 8, 5, 0.85);
+  border: 1px solid rgba(212, 166, 64, 0.3);
+  border-radius: 20px;
+  padding: 6px 12px;
+}
+
+.chat-input-pill input {
+  width: 100%;
+  background: transparent;
+  border: none;
+  outline: none;
+  color: #fff;
+  font-family: var(--font-sans);
+  font-size: 11.5px;
+}
+
+.chat-input-pill input::placeholder {
+  color: #9ca3af;
+}
+
+.hidden-submit {
+  display: none;
+}
+
+.action-buttons-group {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.circle-btn {
+  position: relative;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: rgba(18, 8, 5, 0.88);
+  border: 1px solid rgba(212, 166, 64, 0.3);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+  color: #fff;
+  cursor: pointer;
+  transition: all var(--ease-spring);
+  outline: none;
+}
+
+.circle-btn:hover {
+  background: rgba(45, 18, 12, 0.95);
+  border-color: var(--gold-bright);
+  transform: scale(1.1);
+}
+
+.circle-btn:active {
+  transform: scale(0.92);
+}
+
+/* Heart like button with counter */
+.circle-btn.heart-btn {
+  background: linear-gradient(135deg, #e11d48, #be123c);
+  border-color: #fda4af;
+}
+
+.heart-counter-badge {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  background: #fbbf24;
+  color: #000;
+  font-size: 8px;
+  font-weight: 800;
+  padding: 1px 4px;
+  border-radius: 8px;
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* ==========================================================================
+   FLOATING HEARTS RISING LAYER
+   ========================================================================== */
+.floating-hearts-layer {
+  position: absolute;
+  right: 14px;
+  bottom: 50px;
+  width: 60px;
+  height: 240px;
+  pointer-events: none;
+  z-index: 15;
+}
+
+.flying-heart-item {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  font-size: 22px;
+  animation: heart-float 1.8s ease-out forwards;
+}
+
+@keyframes heart-float {
+  0% {
+    opacity: 1;
+    transform: translateY(0) scale(0.8) rotate(0deg);
+  }
+  30% {
+    transform: translateY(-50px) scale(1.2) rotate(-15deg);
+  }
+  70% {
+    transform: translateY(-130px) scale(1) rotate(15deg);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateY(-200px) scale(0.6) rotate(-10deg);
+    opacity: 0;
+  }
+}
+
+/* ==========================================================================
+   GIFTS MODAL PANEL
+   ========================================================================== */
+.modal-backdrop {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(6px);
+  z-index: 100;
+  display: flex;
+  align-items: flex-end;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.25s ease;
+}
+
+.modal-backdrop.open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.gifts-modal-panel {
+  width: 100%;
+  background: rgba(24, 10, 6, 0.96);
+  border-top: 1.5px solid var(--gold-bright);
+  border-radius: 20px 20px 0 0;
+  padding: 16px;
+  box-shadow: 0 -8px 24px rgba(0, 0, 0, 0.8);
+  transform: translateY(100%);
+  transition: transform 0.3s var(--ease-spring);
+}
+
+.modal-backdrop.open .gifts-modal-panel {
+  transform: translateY(0);
+}
+
+.gifts-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 14px;
+}
+
+.gifts-modal-header h2 {
+  font-size: 14px;
+  color: var(--gold-light);
+  font-family: var(--font-serif);
+}
+
+.close-gifts-btn {
+  background: transparent;
+  border: none;
+  color: #9ca3af;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.gifts-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 8px;
+  margin-bottom: 14px;
+}
+
+.gift-item-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 8px 4px;
+  background: rgba(45, 18, 12, 0.6);
+  border: 1px solid rgba(212, 166, 64, 0.2);
+  border-radius: 10px;
+  cursor: pointer;
+  transition: all var(--ease-smooth);
+}
+
+.gift-item-card:hover, .gift-item-card.selected {
+  background: rgba(122, 28, 16, 0.6);
+  border-color: var(--gold-bright);
+  transform: translateY(-2px);
+}
+
+.gift-item-card .gift-icon {
+  font-size: 22px;
+  margin-bottom: 4px;
+}
+
+.gift-item-card .gift-name {
+  font-size: 9px;
+  color: #fff;
+  text-align: center;
+  margin-bottom: 2px;
+}
+
+.gift-item-card .gift-price {
+  font-size: 9px;
+  font-weight: 700;
+  color: var(--gold-bright);
+}
+
+.gifts-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  border-top: 1px solid rgba(255, 255, 255, 0.08);
+  padding-top: 10px;
+  font-size: 11px;
+}
+
+.confirm-gift-btn {
+  padding: 6px 16px;
+  background: linear-gradient(135deg, var(--gold-bright), #b45309);
+  border: none;
+  border-radius: 16px;
+  color: #000;
+  font-weight: 700;
+  font-size: 11.5px;
+  cursor: pointer;
+  transition: transform var(--ease-spring);
+}
+
+.confirm-gift-btn:hover {
+  transform: scale(1.05);
+}

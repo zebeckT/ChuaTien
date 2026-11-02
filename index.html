@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Chùa Tiên - Phòng Lễ Trực Tuyến & Chiêm Bái</title>
+  <meta name="description" content="Chùa Tiên - Không gian lễ Phật trực tuyến, dâng hương, điểm danh hằng ngày, thả tim thỉnh chuông và cúng dường thanh tịnh.">
+  
+  <!-- Google Fonts: Playfair Display for traditional sacred calligraphy, Be Vietnam Pro for clean Vietnamese UI -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:wght@400;500;600;700;800&family=Playfair+Display:ital,wght@0,600;0,700;1,600&display=swap" rel="stylesheet">
+  
+  <!-- Three.js 3D Engine for 3D Devotee Models -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <!-- Mobile/Stream Center Frame Container -->
+  <main class="stream-phone-container" id="stream-container" role="main">
+    
+    <!-- Temple Hall Visual Backdrop -->
+    <div class="temple-backdrop-layer">
+      <img src="assets/chua_tien_live.jpg" alt="Chính Điện Chùa Tiên - Tượng Phật Dát Vàng" class="backdrop-img" id="backdrop-img">
+      <div class="backdrop-gradient-overlay"></div>
+      
+      <!-- Interactive 3D Devotee Canvas (Three.js) -->
+      <canvas id="three-canvas" class="three-canvas"></canvas>
+
+      <!-- 2D Particle Effects Overlay -->
+      <canvas id="effects-canvas" class="effects-canvas"></canvas>
+
+      <!-- Traditional Vietnamese Red Couplet Banners -->
+      <div class="couplet-banner left-banner" aria-label="Câu đối bên trái: Tâm an vạn sự an">
+        <div class="couplet-header">☸️</div>
+        <span>Tâm</span>
+        <span>an</span>
+        <span>vạn</span>
+        <span>sự</span>
+        <span>an</span>
+      </div>
+
+      <div class="couplet-banner right-banner" aria-label="Câu đối bên phải: Lòng từ ấm muôn nơi">
+        <div class="couplet-header">🪷</div>
+        <span>Lòng</span>
+        <span>từ</span>
+        <span>ấm</span>
+        <span>muôn</span>
+        <span>nơi</span>
+      </div>
+
+      <!-- Devotee kneeling in front of the altar (Linh) -->
+      <div class="altar-devotee-wrapper">
+        <div class="devotee-halo-pulse"></div>
+        <div class="devotee-tag altar-tag">
+          <span class="user-avatar-mini">🧘</span>
+          <span class="name">Linh</span>
+        </div>
+      </div>
+
+      <!-- Peaceful sleeping ginger cat on the sanctuary carpet -->
+      <div class="temple-cat-wrapper" title="Chú mèo tam bảo đang ngủ tịnh tâm">
+        <span class="cat-sleep-text">Zzz...</span>
+        <span class="cat-emoji">🐱</span>
+      </div>
+
+      <!-- Floating Devotee Seat Tags (positioned over devotees in rows) -->
+      <div class="devotee-tag-layer">
+        <div class="seat-badge-tag pos-1" data-id="thu">
+          <span class="badge-avatar">🌸</span>
+          <span class="badge-name">THU TH...</span>
+        </div>
+        <div class="seat-badge-tag pos-2" data-id="saa">
+          <span class="badge-avatar">👑</span>
+          <span class="badge-name">Saa</span>
+          <span class="badge-sub">🔥 2</span>
+        </div>
+        <div class="seat-badge-tag pos-3" data-id="risu">
+          <span class="badge-avatar">🪷</span>
+          <span class="badge-name">Ri Su</span>
+        </div>
+        <div class="seat-badge-tag pos-4" data-id="kim">
+          <span class="badge-avatar">✨</span>
+          <span class="badge-name">KimN...</span>
+          <span class="badge-sub">🔥 1</span>
+        </div>
+        <div class="seat-badge-tag pos-5" data-id="huuti">
+          <span class="badge-avatar">🌿</span>
+          <span class="badge-name">huuti...</span>
+          <span class="badge-sub">1</span>
+        </div>
+        <div class="seat-badge-tag pos-6" data-id="alo">
+          <span class="badge-avatar">🌸</span>
+          <span class="badge-name">Alo</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- UI Overlay Controls & Widgets -->
+    <div class="stream-ui-layer">
+      
+      <!-- TOP STATUS BAR -->
+      <header class="top-nav-bar">
+        <div class="top-left-rank-pill">
+          <span class="fire-icon">🔥</span>
+          <span class="rank-title">Bảng xếp hạng hằng ngày</span>
+          <span class="chevron">›</span>
+        </div>
+
+        <div class="top-right-room-pill">
+          <span class="live-dot"></span>
+          <span id="room-users-text">Phòng trực tiếp · 24 Phật tử</span>
+          <button id="btn-toggle-sound" class="mini-sound-btn" title="Bật/Tắt âm chuông tụng kinh" aria-label="Âm thanh thiền">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+              <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/>
+              <path d="M15.54 8.46a5 5 0 0 1 0 7.07"/>
+            </svg>
+          </button>
+        </div>
+      </header>
+
+      <!-- MAIN UPPER WIDGETS ROW (LEFT & RIGHT PANELS) -->
+      <section class="upper-widgets-grid">
+        
+        <!-- LEFT COLUMN WIDGETS -->
+        <div class="widgets-col left-col">
+          
+          <!-- Widget 1: Hôm nay cùng thắp nén hương -->
+          <div class="glass-card incense-goal-card">
+            <div class="card-header-row">
+              <span class="fire-badge">🔥</span>
+              <span class="card-title">Hôm nay cùng thắp</span>
+            </div>
+            <div class="progress-number-row">
+              <span class="current-val" id="candle-current">56</span>
+              <span class="max-val">/ 3.000 nén</span>
+            </div>
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill" id="candle-progress-bar" style="width: 2.2%;"></div>
+            </div>
+            <div class="progress-sub-text" id="candle-sub-text">Còn 2.944 nén nữa</div>
+          </div>
+
+          <!-- Widget 2: Tấm Lòng Thành (Top Donors Leaderboard) -->
+          <div class="glass-card leaderboard-card">
+            <div class="card-title-gold">TẤM LÒNG THÀNH</div>
+            <ul class="leaderboard-list" id="leaderboard-list">
+              <li class="leader-item">
+                <span class="rank-num rank-1">1</span>
+                <span class="leader-name">Cá_voii_ 🐳</span>
+                <span class="leader-score">3</span>
+              </li>
+              <li class="leader-item">
+                <span class="rank-num rank-2">2</span>
+                <span class="leader-name">Saa 👑</span>
+                <span class="leader-score">2</span>
+              </li>
+              <li class="leader-item">
+                <span class="rank-num rank-3">3</span>
+                <span class="leader-name">KimNhung ୨୧</span>
+                <span class="leader-score">1</span>
+              </li>
+            </ul>
+            <div class="leaderboard-footer">
+              <span class="user-avatar-tiny">👤</span>
+              <span class="footer-msg">Saa... còn 2 nén để lên 🏆</span>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- RIGHT COLUMN WIDGETS -->
+        <div class="widgets-col right-col">
+          
+          <!-- Widget 3: Lễ Hồi Hướng Sau (Countdown Timer) -->
+          <div class="glass-card timer-card">
+            <div class="timer-header">
+              <span class="pray-hands-icon">🙏</span>
+              <span class="timer-title">Lễ hồi hướng sau</span>
+            </div>
+            <div class="timer-value-row">
+              <span class="timer-digits" id="timer-display">02:11</span>
+              <span class="devotee-badge">24 Phật tử</span>
+            </div>
+          </div>
+
+          <!-- Widget 4: Thả Tim Thỉnh Chuông -->
+          <div class="glass-card bell-heart-card" id="card-bell-heart">
+            <div class="card-header-row">
+              <span class="pray-hands-icon">🔔</span>
+              <span class="card-title">Thả tim thỉnh chuông</span>
+            </div>
+            <div class="bell-progress-row">
+              <span class="bell-val" id="hearts-count-text">695</span>
+              <span class="bell-target">/ 1.000 ❤️</span>
+            </div>
+            <div class="progress-bar-track">
+              <div class="progress-bar-fill gold-fill" id="hearts-progress-bar" style="width: 69.5%;"></div>
+            </div>
+          </div>
+
+          <!-- Widget 5: Offering Action Buttons Stack (Dâng Hương & Cúng Dường) -->
+          <div class="offering-btn-stack">
+            <button class="offering-btn" id="btn-gift-rose" data-name="Hoa hồng dâng hương" data-cost="1 xu">
+              <span class="offering-icon">🌹</span>
+              <div class="offering-text">
+                <div class="title">Dâng hương</div>
+                <div class="subtitle">Hoa hồng · 1 xu</div>
+              </div>
+            </button>
+
+            <button class="offering-btn" id="btn-gift-pray" data-name="Lễ Phật cầu an" data-cost="5 xu">
+              <span class="offering-icon">🙏</span>
+              <div class="offering-text">
+                <div class="title">Lễ Phật</div>
+                <div class="subtitle">Quà từ 5 xu</div>
+              </div>
+            </button>
+
+            <button class="offering-btn" id="btn-gift-lotus" data-name="Hoa sen nở cúng dường" data-cost="10 xu">
+              <span class="offering-icon">🪷</span>
+              <div class="offering-text">
+                <div class="title">Hoa sen nở</div>
+                <div class="subtitle">Quà từ 10 xu</div>
+              </div>
+            </button>
+
+            <button class="offering-btn" id="btn-gift-grand" data-name="Đại lễ cúng dường" data-cost="100 xu">
+              <span class="offering-icon">✨</span>
+              <div class="offering-text">
+                <div class="title">Đại lễ cúng dường</div>
+                <div class="subtitle">Quà từ 100 xu</div>
+              </div>
+            </button>
+          </div>
+
+          <!-- Disclaimer Note -->
+          <div class="disclaimer-note">
+            Không gian giải trí, không phải cơ sở tôn giáo. Dâng hương là tự nguyện, không kèm cam kết tâm linh.
+          </div>
+
+        </div>
+      </section>
+
+      <!-- STREAM SHARE TOAST BANNER -->
+      <div class="stream-share-toast" id="share-toast">
+        <span class="toast-heart">❤️</span>
+        <span>Cảm ơn bạn <strong id="toast-username">bubu</strong> đã chia sẻ. Chúc bạn một ngày an lành.</span>
+      </div>
+
+      <!-- FLOATING CHECK-IN & SANGHA EVENT STREAM (FLYING COMMENTS) -->
+      <section class="live-events-stream" id="events-stream" aria-label="Bình luận và điểm danh trực tuyến">
+        <!-- Animated flying bubbles dynamically appended here -->
+      </section>
+
+      <!-- STREAM BOTTOM INTERACTION BAR -->
+      <footer class="stream-bottom-bar">
+        <form class="chat-input-pill" id="quick-input-form">
+          <input type="text" id="stream-input" placeholder="Nhập điểm danh, niệm Phật..." maxlength="100" autocomplete="off">
+          <button type="submit" class="hidden-submit" tabindex="-1"></button>
+        </form>
+
+        <div class="action-buttons-group">
+          <!-- Smile Emoji Quick Menu -->
+          <button class="circle-btn" id="btn-quick-emoji" title="Chọn biểu cảm nhanh" aria-label="Biểu cảm">
+            <span>😀</span>
+          </button>
+
+          <!-- Custom Prayer Gõ Mõ Button -->
+          <button class="circle-btn ritual-wooden-fish" id="btn-quick-gomo" title="Gõ mõ tụng kinh (Phím Space)" aria-label="Gõ mõ">
+            <span>🪵</span>
+          </button>
+
+          <!-- Rose Offering Quick Button -->
+          <button class="circle-btn rose-btn" id="btn-rose-quick" title="Dâng 1 đóa hoa hồng (1 xu)" aria-label="Dâng hoa">
+            <span>🌹</span>
+          </button>
+
+          <!-- Gift Box (Cúng dường) -->
+          <button class="circle-btn gift-btn" id="btn-open-gift-modal" title="Mở kho lễ vật cúng dường" aria-label="Lễ vật">
+            <span>🎁</span>
+          </button>
+
+          <!-- Heart Like & Ring Bell Button with Counter -->
+          <button class="circle-btn heart-btn" id="btn-like-heart" title="Thả tim thỉnh chuông (Nhấn liên tục)" aria-label="Thả tim">
+            <span class="heart-icon">❤️</span>
+            <span class="heart-counter-badge" id="heart-bottom-count">25</span>
+          </button>
+        </div>
+      </footer>
+
+    </div>
+
+    <!-- FLOATING HEARTS RISING CONTAINER -->
+    <div class="floating-hearts-layer" id="floating-hearts-container"></div>
+
+    <!-- MODAL: KHO LỄ VẬT CÚNG DƯỜNG (GIFT BOX MODAL) -->
+    <div class="modal-backdrop" id="modal-gifts" role="dialog" aria-modal="true" aria-labelledby="gifts-modal-title">
+      <div class="gifts-modal-panel glass-card">
+        <div class="gifts-modal-header">
+          <h2 id="gifts-modal-title">🪷 Cúng Dường Tam Bảo Chùa Tiên</h2>
+          <button class="close-gifts-btn" id="btn-close-gifts" aria-label="Đóng bảng lễ vật">✕</button>
+        </div>
+
+        <div class="gifts-grid">
+          <div class="gift-item-card" data-name="1 Nén Hương Trầm" data-cost="1">
+            <div class="gift-icon">🕯️</div>
+            <div class="gift-name">Nén Hương Trầm</div>
+            <div class="gift-price">1 xu</div>
+          </div>
+          <div class="gift-item-card" data-name="Đài Hoa Sen Hồng" data-cost="10">
+            <div class="gift-icon">🪷</div>
+            <div class="gift-name">Đài Sen Cúng Phật</div>
+            <div class="gift-price">10 xu</div>
+          </div>
+          <div class="gift-item-card" data-name="Ngọn Đèn Dầu Vạn Niên" data-cost="20">
+            <div class="gift-icon">🪔</div>
+            <div class="gift-name">Đèn Dầu Bát Nhã</div>
+            <div class="gift-price">20 xu</div>
+          </div>
+          <div class="gift-item-card" data-name="Đại Lễ Hoa & Quả" data-cost="100">
+            <div class="gift-icon">✨</div>
+            <div class="gift-name">Đại Lễ Cúng Dường</div>
+            <div class="gift-price">100 xu</div>
+          </div>
+        </div>
+
+        <div class="gifts-footer">
+          <span>Ví phước đức: <strong style="color:var(--gold-bright);">999 xu</strong></span>
+          <button class="confirm-gift-btn" id="btn-confirm-gift">Dâng Lễ Ngay 🙏</button>
+        </div>
+      </div>
+    </div>
+
+  </main>
+
+  <script src="app.js"></script>
+</body>
+</html>
